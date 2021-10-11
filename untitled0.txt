@@ -1,0 +1,117 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Oct  6 15:43:37 2021
+
+@author: vnarayana
+"""
+
+import numpy as np
+from matplotlib.patches import Circle
+from matplotlib.collections import PatchCollection
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib import animation
+import math
+from random import randrange
+from scipy.stats import truncnorm
+
+def get_truncated_normal(mean=1.7, sd=0.5, low=5, upp=20):
+    return truncnorm(
+        (low - mean) / sd, (upp - mean) / sd, loc=mean, scale=sd)
+
+def checkCollision(a,b,c,d):
+    return pow(pow(a-b,2)+pow(c-d,2),0.5)
+
+
+
+aggx1 = []
+aggx2 = []
+aggy1 = []
+aggy2 = []
+aggradii1 = []
+aggradiix2 = []  
+x = []
+y = []
+k = 1
+l = 0
+Nos = 4
+N = 100
+r = 50
+X = get_truncated_normal(mean=20, sd=2, low=10, upp=30)
+
+radii = X.rvs(N*Nos)
+fig, ax = plt.subplots()
+ax.hist(X.rvs(N*Nos), density=True,bins =10)
+plt.show()
+for j in range(0,Nos):
+     
+    for i in range(0,N):
+        if k>2:
+            k = 0
+            l = 1
+        theta = 360/N*i
+        
+        a =(r * np.cos(theta)) + (100*k) +(100*l)-40
+        b = (r * np.sin(theta)) + (100*l)+60 
+
+        y.append(b)
+        x.append(a)
+
+        i = i+1
+    k = k+1
+
+fig, ax = plt.subplots()
+
+ax.scatter(x, y, s=radii/10)
+ax.set_xlim([00,260])
+ax.set_ylim([0,260])
+ax.set_aspect('equal')
+plt.show()
+
+time = 2
+for i in range(0, time):
+    for j in range(0,Nos*N):
+        x[j] = x[j] + randrange(10)
+        y[j] = y[j] + randrange(10)
+        
+    fig, ax = plt.subplots()
+    ax.scatter(x, y, s=radii/10)
+    ax.set_xlim([00,260])
+    ax.set_ylim([0,260])
+    ax.set_aspect('equal')
+    plt.show()
+
+def checkCollision(a,b,c,d):
+    return pow(pow(a-b,2)+pow(c-d,2),0.5)
+points = [x,y]
+Minimum_distances =[]   
+for i in range(0,Nos*N):
+    distances = []
+    for j in range(0,Nos*N):
+        if i!=j:
+            a = checkCollision(x[i],x[j],y[i],y[j])
+            distances.append(a)
+        if i>j:
+            if a< (radii[i] + radii[j])/10:
+                aggx1.append(x[i])
+                aggx2.append(x[j])
+                aggy1.append(y[i])
+                aggy2.append(y[j])
+                aggradii1.append(radii[i])
+                aggradiix2.append(radii[j])
+    Minimum_distances.append(min(distances))
+            
+plt.hist(Minimum_distances, density=True, bins=5)  # density=False would make counts
+plt.ylabel('Interlamellar Spacing (2*Lambda)')
+plt.xlabel('Data');  
+aggradii1=np.true_divide(aggradii1, 10)
+aggradiix2=np.true_divide(aggradiix2, 10)
+fig, ax = plt.subplots()
+ax.scatter(x, y, s=radii/10)
+ax.scatter(aggx1, aggy1, aggradii1, c='r')
+ax.scatter(aggx2, aggy2, aggradiix2,c ='r')
+ax.set_xlim([00,260])
+ax.set_ylim([0,260])
+ax.set_aspect('equal')
+plt.show()         
+
